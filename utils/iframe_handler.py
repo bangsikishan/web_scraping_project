@@ -1,5 +1,5 @@
-from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 
 def find_element_in_iframe(driver, target_xpath: str):
     try:
@@ -7,6 +7,4 @@ def find_element_in_iframe(driver, target_xpath: str):
         driver.switch_to.frame(iframe_element)
         driver.find_element(By.XPATH, target_xpath)
     except NoSuchElementException:
-        return False
-    else:
-        return driver
+        driver.switch_to.default_content()
