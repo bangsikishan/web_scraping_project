@@ -4,8 +4,9 @@ from selenium.webdriver.common.by import By
 from tqdm import tqdm
 
 from utils.link_filter import filter_unique_links
+from utils.final_steps import finalize
 
-def handle_level_one(driver, doc_container_xpath: str, doc_element_tagname: str, bid_details: dict):
+def handle_level_one(driver, ecgains: str, doc_container_xpath: str, doc_element_tagname: str, bid_details: dict):
     print("\n[+] Processing level 1...")
     for keys, bid_detail in tqdm(bid_details.items()):
         driver.execute_script(f"window.open('{bid_detail['page_links'][0]}', '_blank');")
@@ -23,6 +24,4 @@ def handle_level_one(driver, doc_container_xpath: str, doc_element_tagname: str,
         driver.switch_to.window(driver.window_handles[0])
         time.sleep(2)
 
-    import json
-    with open("temp\\output.json", "w") as f:
-        json.dump(bid_details, f, indent=4)
+    finalize(ecgains=ecgains, bid_details=bid_details)
