@@ -13,6 +13,7 @@ from utils.date_expiry_checker import is_date_expired
 from utils.date_parser import parse_date
 from utils.element_finder import find_child_elements
 from utils.file_downloader import download_file
+from utils.final_steps import finalize
 from utils.iframe_handler import find_element_in_iframe
 from utils.level_one_handler import handle_level_one
 from utils.link_filter import filter_unique_links
@@ -60,7 +61,8 @@ def get_bids(url: str, ecgains: str, level: str, bid_no_xpath: str, title_xpath:
             link = child_element.get_attribute("href")
 
             bid_details.update(store_bid_details(bid_no=bid_no, title=title, due_date=due_date, links=[link], level=level, index=index))
-            
+        
+        finalize(ecgains=ecgains, bid_details=bid_details)
         return
 
     # Collect bid details
@@ -83,20 +85,8 @@ def get_bids(url: str, ecgains: str, level: str, bid_no_xpath: str, title_xpath:
 
     # Further processing if website is of level one
     if int(level) == 1:
-        handle_level_one(driver=driver, doc_container_xpath=doc_container_xpath, doc_element_tagname=doc_element_tagname, bid_details=bid_details)
-        return
-    
-    # import json
-    # with open("temp\\output.json", "w") as f:
-    #     json.dump(bid_details, f, indent=4)
-
-    # for bid_detail in bid_details.items():
-    #     download_links = bid_detail["download_links"]
-
-    #     for link in download_links:
-    #         file_url, file_name, file_size = download_file(url=link)
-    #         hash = generate_sha256(ecgains=ecgains, bid_no=bid_detail["bid_no"], file_name=file_name)
-
-    #         print(f"BID NO: {bid_detail['bid_no']}\nTITLE: {bid_detail['title']}\nDUE DATE: {bid_detail['due_date']}\nHASH: {hash}\nFILE URL: {file_url}\nFILE NAME: {file_name}\nFILE SIZE: {file_size}\n=======================================\n")
+        handle_level_one(driver=driver, ecgains=ecgains, doc_container_xpath=doc_container_xpath, doc_element_tagname=doc_element_tagname, bid_details=bid_details)
+    else:
+        finalize(ecgains=ecgains, bid_details=bid_details)
     
     driver.quit()
